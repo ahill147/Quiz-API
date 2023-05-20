@@ -7,12 +7,10 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Data
-public class QuizResponseDto {
+public class QuestionRequestDto {
+	
+	private String text;
 
-  private Long id;
-
-  private String name;
-
-  private List<QuestionResponseDto> questions;
+    private List<AnswerRequestDto> answers;
 
 }
