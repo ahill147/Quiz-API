@@ -15,4 +15,9 @@ public class QuestionResponseDto {
 
   private List<AnswerResponseDto> answers;
 
+public void setQuestion(String errorMessage) {
+	// TODO Auto-generated method stub
+	
+}
+
 }

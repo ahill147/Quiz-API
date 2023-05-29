@@ -17,7 +17,7 @@ import com.cooksys.quiz_api.repositories.QuestionRepository;
 import com.cooksys.quiz_api.repositories.QuizRepository;
 import com.cooksys.quiz_api.services.QuizService;
 
-import javassist.NotFoundException;
+import com.cooksys.quiz_api.exceptions.NotFoundException;
 
 import org.springframework.stereotype.Service;
 
@@ -27,93 +27,91 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class QuizServiceImpl implements QuizService {
 
-  private final QuizRepository quizRepository;
-  private final QuizMapper quizMapper;
-  private final QuestionMapper questionMapper;
-  private final QuestionRepository questionRepository;
+    private final QuizRepository quizRepository;
+    private final QuizMapper quizMapper;
+    private final QuestionMapper questionMapper;
+    private final QuestionRepository questionRepository;
 
-  private Quiz getQuiz(Long id) throws NotFoundException {
-	    Optional<Quiz> quiz = quizRepository.findById(id);
+    private Quiz getQuiz(Long id) {
+        Optional<Quiz> quiz = quizRepository.findById(id);
+        return quiz.orElse(null);
+    }
 
-	    if (quiz.isEmpty()) {
-	      throw new NotFoundException("Quiz not found with id: " + id);
-	    }
-	    return quiz.get();
-	  }
+    private Question getQuestion(Long id, Long questionID) {
+        Optional<Question> question = questionRepository.findByIdAndQuizId(questionID, id);
+        return question.orElse(null);
+    }
 
-	  private Question getQuestion(Long id, Long questionID) throws NotFoundException {
-	    Optional<Question> question = questionRepository.findByIdAndQuizId(questionID, id);
+    @Override
+    public List<QuizResponseDto> getAllQuizzes() {
+        return quizMapper.entitiesToDtos(quizRepository.findAll());
+    }
 
-	    if (question.isEmpty()) {
-	      throw new NotFoundException("Question not found with id: " + questionID);
-	    }
-	    return question.get();
-	  }
+    @Override
+    public QuizResponseDto createQuiz(QuizRequestDto quizRequestDto) {
+        Quiz quiz = quizMapper.requestEntity(quizRequestDto);
 
-	  @Override
-	  public List<QuizResponseDto> getAllQuizzes() {
-	    return quizMapper.entitiesToDtos(quizRepository.findAll());
-	  }
+        for (Question question : quiz.getQuestions()) {
+            question.setQuiz(quiz);
 
-	  @Override
-	  public QuizResponseDto createQuiz(QuizRequestDto quizRequestDto) {
-	    Quiz quiz = quizMapper.requestEntity(quizRequestDto);
+            for (Answer answer : question.getAnswers()) {
+                answer.setQuestion(question);
+            }
+        }
+        Quiz result = quizRepository.saveAndFlush(quiz);
+        return quizMapper.entityToDto(result);
+    }
 
-	    for (Question question : quiz.getQuestions()) {
-	      question.setQuiz(quiz);
+    @Override
+    public QuizResponseDto deleteQuiz(Long id) {
+        Quiz quiz = getQuiz(id);
+        if (quiz != null) {
+            quizRepository.delete(quiz);
+            return quizMapper.entityToDto(quiz);
+        }
+        return null;
+    }
 
-	      for (Answer answer : question.getAnswers()) {
-	        answer.setQuestion(question);
-	      }
-	    }
-	    Quiz result = quizRepository.saveAndFlush(quiz);
-	    return quizMapper.entityToDto(result);
-	  }
+    @Override
+    public QuizResponseDto renameQuiz(Long id, String name) {
+        Quiz quiz = getQuiz(id);
+        if (quiz != null) {
+            quiz.setName(name);
+            Quiz result = quizRepository.saveAndFlush(quiz);
+            return quizMapper.entityToDto(result);
+        }
+        return null;
+    }
 
-	  @Override
-	  public QuizResponseDto deleteQuiz(Long id) throws NotFoundException {
-	    Quiz result = getQuiz(id);
-	    quizRepository.delete(result);
-	    return quizMapper.entityToDto(result);
-	  }
+    @Override
+    public QuestionResponseDto getQuizQuestion(Long id) {
+        Quiz quiz = getQuiz(id);
+        if (quiz != null) {
+            List<Question> questions = quiz.getQuestions();
+            if (!questions.isEmpty()) {
+                Question rand = questions.get(new Random().nextInt(questions.size()));
+                return questionMapper.entityToDto(rand);
+            }
+        }
+        return null;
+    }
 
-	  @Override
-	  public QuizResponseDto renameQuiz(Long id, String name) throws NotFoundException {
-	    Quiz result = getQuiz(id);
-	    result.setName(name);
-	    return quizMapper.entityToDto(quizRepository.saveAndFlush(result));
-	  }
+    @Override
+    public QuizResponseDto addQuestion(Long id, QuestionRequestDto questionRequestDto) throws NotFoundException {
+        Quiz quizToUpdate = getQuiz(id);
+        if (quizToUpdate != null) {
+            Question question = questionMapper.questionDtoToEntity(questionRequestDto);
+            question.setQuiz(quizToUpdate);
+            quizToUpdate.getQuestions().add(question);
+            Quiz result = quizRepository.saveAndFlush(quizToUpdate);
+            return quizMapper.entityToDto(result);
+        }
+        throw new NotFoundException("Quiz not found with id: " + id);
+    }
 
-	  @Override
-	  public QuestionResponseDto getQuizQuestion(Long id) throws NotFoundException {
-	    Quiz result = getQuiz(id);
-	    Object[] questions = result.getQuestions().toArray();
-	    Question rand = (Question) questions[new Random().nextInt(result.getQuestions().size())];
-	    return questionMapper.entityToDto(rand);
-	  }
-
-	  @Override
-	  public QuizResponseDto addQuestion(Long id, QuestionRequestDto questionRequestDto) throws NotFoundException {
-		  
-	    Quiz quizToUpdate = getQuiz(id);
-
-	    for (Question question : quizToUpdate.getQuestions()) {
-	      question.setQuiz(quizToUpdate);
-	      question.setText(questionRequestDto.getText());
-
-	      for (Answer answer : question.getAnswers()) {
-	        answer.setQuestion(question);
-	      }
-	    }
-	    quizToUpdate.getQuestions().add(questionMapper.questionDtoToEntity(questionRequestDto));
-	    return quizMapper.entityToDto(quizRepository.saveAndFlush(quizToUpdate));
-	  }
-
-	  @Override
-	  public QuestionResponseDto deleteQuestion(Long id, Long questionID) throws NotFoundException {
-	    Question question = getQuestion(id, questionID);
-	    questionRepository.delete(question);
-	    return questionMapper.entityToDto(question);
-	  }
-
+    @Override
+	public QuestionResponseDto deleteQuestion(Long id, Long questionID) throws NotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
