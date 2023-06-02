@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class QuestionRequestDto {
-	
+
 	private String text;
 
-    private List<AnswerRequestDto> answers;
+	private List<AnswerRequestDto> answers;
 
 }

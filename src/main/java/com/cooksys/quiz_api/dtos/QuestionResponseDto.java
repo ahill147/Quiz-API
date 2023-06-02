@@ -9,15 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 public class QuestionResponseDto {
 
-  private Long id;
+	private Long id;
 
-  private String text;
+	private String text;
 
-  private List<AnswerResponseDto> answers;
-
-public void setQuestion(String errorMessage) {
-	// TODO Auto-generated method stub
-	
-}
+	private List<AnswerResponseDto> answers;
 
 }

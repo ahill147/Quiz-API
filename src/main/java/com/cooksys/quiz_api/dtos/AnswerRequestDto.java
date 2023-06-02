@@ -8,4 +8,6 @@ import lombok.NoArgsConstructor;
 public class AnswerRequestDto {
 
 	private String text;
+	
+	private boolean correct;
 }

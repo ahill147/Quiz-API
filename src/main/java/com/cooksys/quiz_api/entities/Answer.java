@@ -7,7 +7,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,19 +15,18 @@ import lombok.NoArgsConstructor;
 @Data
 public class Answer {
 
-  @Id
-  @GeneratedValue
-  @Column(nullable=false)
-  private Long id;
+	@Id
+	@GeneratedValue
+	private Long id;
 
-  @Column(nullable=false)
-  private String text;
+	private String text;
 
-  @Column(nullable=false)
-  private boolean correct = false;
+	private boolean correct = false;
 
-  @ManyToOne
-  @JoinColumn(name = "question_id")
-  private Question question;
+	private boolean deleted;
+
+	@ManyToOne
+	@JoinColumn(name = "question_id")
+	private Question question;
 
 }

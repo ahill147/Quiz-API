@@ -21,18 +21,19 @@ public class Question {
 
 	@Id
 	@GeneratedValue
-	@Column(nullable=false)
 	private Long id;
-	
-	@Column(nullable=false)
-	private String text;
 
+	private String text;
+	
+	private Long questionID;
+
+	private boolean deleted;
+	
 	@ManyToOne
 	@JoinColumn(name = "quiz_id")
 	private Quiz quiz;
 
-	@OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
-	@Column(nullable=false)
+	@OneToMany(mappedBy = "question")
 	private List<Answer> answers;
 
 }

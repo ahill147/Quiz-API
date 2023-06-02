@@ -7,22 +7,23 @@ import com.cooksys.quiz_api.dtos.QuestionResponseDto;
 import com.cooksys.quiz_api.dtos.QuizRequestDto;
 import com.cooksys.quiz_api.dtos.QuizResponseDto;
 
-import javassist.NotFoundException;
-
 public interface QuizService {
 
-  List<QuizResponseDto> getAllQuizzes();
-  
-  QuizResponseDto createQuiz(QuizRequestDto quizRequestDto);
+	List<QuizResponseDto> getAllQuizzes();
+	
+//	List<QuestionResponseDto> getAllQuestions();
 
-  QuizResponseDto deleteQuiz(Long id) throws NotFoundException;
+	QuizResponseDto createQuiz(QuizRequestDto quizRequestDTO);
 
-  QuizResponseDto renameQuiz(Long id, String name) throws NotFoundException;
+	QuizResponseDto deleteQuiz(Long id);
 
-  QuestionResponseDto getQuizQuestion(Long id) throws NotFoundException;
+	QuizResponseDto renameQuiz(Long id, String newName);
+	
+	QuestionResponseDto getRandomQuizQuestion(Long id);
 
-  QuizResponseDto addQuestion(Long id, QuestionRequestDto questionRequestDto) throws NotFoundException;
+	QuizResponseDto addQuestionToQuiz(Long id, QuestionRequestDto questionRequestDto);
 
-  QuestionResponseDto deleteQuestion(Long id, Long questionID) throws NotFoundException;
+	QuestionResponseDto deleteQuestionFromQuiz(Long id, Long questionID);
+
 
 }

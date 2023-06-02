@@ -2,11 +2,13 @@ package com.cooksys.quiz_api.mappers;
 
 import java.util.List;
 
+import org.mapstruct.Mapper;
+
+import com.cooksys.quiz_api.dtos.QuestionRequestDto;
 import com.cooksys.quiz_api.dtos.QuizRequestDto;
 import com.cooksys.quiz_api.dtos.QuizResponseDto;
+import com.cooksys.quiz_api.entities.Question;
 import com.cooksys.quiz_api.entities.Quiz;
-
-import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = { QuestionMapper.class })
 public interface QuizMapper {
@@ -15,6 +17,6 @@ public interface QuizMapper {
 
   List<QuizResponseDto> entitiesToDtos(List<Quiz> entities);
 
-  Quiz requestEntity(QuizRequestDto quizRequestDto);
+  Quiz dtoToEntity(QuizRequestDto quizRequestDTO);
 
 }

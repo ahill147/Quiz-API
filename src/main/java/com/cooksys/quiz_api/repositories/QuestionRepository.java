@@ -15,6 +15,8 @@ import com.cooksys.quiz_api.entities.Question;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
-	Optional<Question> findByIdAndQuizId(Long questionID, Long id);
+	Optional<Question> findByIdAndDeletedFalse(Long id);
+
+	List<Question> findAllByDeletedFalse();
 
 }
